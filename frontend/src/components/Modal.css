@@ -1,0 +1,71 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.modal-card {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.2rem;
+  background: #0b5d34;
+  color: #fff;
+  border-radius: 14px 14px 0 0;
+}
+.modal-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.modal-head button {
+  background: none;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+}
+.modal-body {
+  padding: 1.2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+.field label {
+  font-size: 0.88rem;
+  color: #044a29;
+  font-weight: 600;
+}
+.field input,
+.field select,
+.field textarea {
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #c5d8ca;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+.field small {
+  color: #6b8774;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}

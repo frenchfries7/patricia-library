@@ -1,0 +1,83 @@
+.dash {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.dash-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  background: linear-gradient(120deg, #cfe3d3, #f1f7f2);
+}
+.dash-hero h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  color: #044a29;
+}
+.dash-hero p {
+  margin: 0.4rem 0 0;
+  color: #2f4f3a;
+}
+.dash-stats {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.9rem 1.4rem;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 8px rgba(4, 74, 41, 0.12);
+}
+.stat-card span {
+  color: #4a6a55;
+  font-size: 0.9rem;
+}
+.stat-card strong {
+  color: #044a29;
+  font-size: 1.9rem;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 1100px) {
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 190px 1fr 36px;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.6rem;
+}
+.bar-label {
+  color: #044a29;
+  font-size: 0.92rem;
+}
+.bar-track {
+  background: #e3ede4;
+  border-radius: 99px;
+  height: 12px;
+  overflow: hidden;
+}
+.bar-fill {
+  background: #0b5d34;
+  height: 100%;
+  border-radius: 99px;
+}

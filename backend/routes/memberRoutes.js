@@ -39,7 +39,7 @@ router.get(
   authorizeRoles("admin", "librarian"),
   getMemberByLibraryNumber,
 );
-router.post(
+router.put(
   "/get-members/update/:libraryNumber",
   protect,
   authorizeRoles("admin", "librarian"),

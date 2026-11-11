@@ -37,7 +37,7 @@ export default function AdminLayout() {
           <div className="brand-logo-wrapper">
             {/* Replace with your official logo asset */}
             <img
-              src="/manila-city-library-logo.png"
+              src="/503510762_122241512240197457_1916182778907247194_n.jpg"
               alt="Manila City Library Logo"
               className="brand-logo"
               onError={(e) => {

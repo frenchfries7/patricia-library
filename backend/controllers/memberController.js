@@ -3,11 +3,16 @@ import Member from "../models/Member.js";
 
 export const createMember = async (req, res) => {
   try {
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, age } = req.body;
 
-    if (!firstName || !lastName) {
+    if (
+      !firstName?.trim() ||
+      !lastName?.trim() ||
+      age === undefined ||
+      age === ""
+    ) {
       return res.status(400).json({
-        message: "First name and last name are required",
+        message: "First name, last name, and age are required.",
       });
     }
 
@@ -35,6 +40,7 @@ export const createMember = async (req, res) => {
     const newMember = await Member.create({
       firstName,
       lastName,
+      age: Number(age),
       libraryNumber,
       barcode,
       profilePicture: req.file ? req.file.path : "",
@@ -67,7 +73,8 @@ export const getMemberByLibraryNumber = async (req, res) => {
       data: member,
     });
   } catch (error) {
-    console.error("Error retrieving member:", error);
+    console.error("CREATE MEMBER ERROR:", error.message);
+    console.error(error.stack);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -92,17 +99,28 @@ export const getAllMembers = async (req, res) => {
 };
 export const getMemberByName = async (req, res) => {
   try {
-    const { firstName, lastName } = req.query;
+    const { q } = req.query;
+
+    if (!q || !q.trim()) {
+      return res.status(400).json({ message: "Search name is required" });
+    }
+
+    const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const tokens = q.trim().split(/\s+/).map(escape);
 
     const members = await Member.find({
-      firstName: { $regex: firstName.trim(), $options: "i" },
-      lastName: { $regex: lastName.trim(), $options: "i" },
-    });
+      $and: tokens.map((t) => ({
+        $or: [
+          { firstName: { $regex: t, $options: "i" } },
+          { lastName: { $regex: t, $options: "i" } },
+        ],
+      })),
+    })
+      .sort({ lastName: 1, firstName: 1 })
+      .limit(20);
 
     if (members.length === 0) {
-      return res.status(404).json({
-        message: "No members found",
-      });
+      return res.status(404).json({ message: "No members found" });
     }
 
     return res.status(200).json({
@@ -115,7 +133,6 @@ export const getMemberByName = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 export const updateMember = async (req, res) => {
   try {
     const { libraryNumber } = req.params;
