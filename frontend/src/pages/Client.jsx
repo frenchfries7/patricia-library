@@ -66,7 +66,7 @@ export default function Clients() {
   const handleDelete = async (m) => {
     if (
       !window.confirm(
-        `Delete ${m.firstName} ${m.lastName} (${m.libraryNumber})? Hindi na ito mababawi.`,
+        `Delete ${m.firstName} ${m.lastName} (${m.libraryNumber})? Are you sure?`,
       )
     )
       return;
@@ -316,24 +316,6 @@ function MemberForm({ member, onDone, onCancel }) {
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-        </div>
-      )}
-
-      {!editing && (
-        <div className="field">
-          <label>Photo (optional)</label>
-          <div className="photo-row">
-            {preview && (
-              <img className="photo-preview" src={preview} alt="Preview" />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              capture="user"
-              onChange={handlePhoto}
-            />
-          </div>
-          <small>Sa phone/tablet, bubuksan nito ang camera.</small>
         </div>
       )}
 

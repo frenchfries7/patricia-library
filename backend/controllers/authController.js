@@ -91,7 +91,7 @@ export const registerAdmin = async (req, res) => {
       fullName: fullName.trim(),
       email: email.toLowerCase().trim(),
       password: hashedPassword,
-      role: "admin",
+      role: "librarian",
     });
 
     // 5. I-return ang response na HINDI kasama ang password
@@ -108,8 +108,6 @@ export const registerAdmin = async (req, res) => {
     console.error("Error registering admin:", error);
     return res.status(500).json({
       message: "Internal server error",
-      error: error.message,
-      stack: error.stack,
     });
   }
 };

@@ -5,6 +5,7 @@ import {
   getAllMembers,
   getMemberByName,
   updateMember,
+  deleteMember,
 } from "../controllers/memberController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { authorizeRoles } from "../middleware/roleMiddleware.js";
@@ -38,6 +39,12 @@ router.get(
   protect,
   authorizeRoles("admin", "librarian"),
   getMemberByLibraryNumber,
+);
+router.delete(
+  "/get-members/delete/:libraryNumber",
+  protect,
+  authorizeRoles("admin", "librarian"),
+  deleteMember,
 );
 router.put(
   "/get-members/update/:libraryNumber",

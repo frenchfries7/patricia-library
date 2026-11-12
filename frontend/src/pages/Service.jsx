@@ -48,8 +48,7 @@ export default function Services() {
         <div className="panel-body">
           <div className="toolbar">
             <p className="muted" style={{ margin: 0 }}>
-              Ang mga <strong>inactive</strong> na service ay hindi na lalabas
-              sa Attendance.
+              The <strong>inactive</strong> service they will appear.
             </p>
             {isAdmin && (
               <button className="btn btn-primary" onClick={() => setModal({})}>

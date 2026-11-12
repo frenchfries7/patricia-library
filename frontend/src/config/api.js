@@ -18,7 +18,7 @@ export const ENDPOINTS = {
   membersSearch: url("VITE_API_MEMBERS_SEARCH"),
   membersCreate: url("VITE_API_CREATE"),
   membersUpdate: url("VITE_API_UPDATE"),
-
+  membersDelete: url("VITE_API_DELETE"),
   // Authentication
   login: url("VITE_API_LOGIN"),
 

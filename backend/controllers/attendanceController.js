@@ -6,14 +6,14 @@ import LibraryService from "../models/LibraryService.js";
 export const timeIn = async (req, res) => {
   try {
     const { memberId, libraryServiceId, activity } = req.body;
-    // 1. Required fields validation
+
+    // 1. Validation check
     if (!memberId || !libraryServiceId) {
       return res.status(400).json({
         message: "Member ID and Library Service ID are required.",
       });
     }
 
-    // 2. ObjectId validation
     if (
       !mongoose.Types.ObjectId.isValid(memberId) ||
       !mongoose.Types.ObjectId.isValid(libraryServiceId)
@@ -23,30 +23,40 @@ export const timeIn = async (req, res) => {
       });
     }
 
-    if (!memberId || !libraryServiceId) {
-      return res.status(400).json({
-        message: "Member ID and Library Service ID are required.",
-      });
-    }
+    // 2. Active Service & Existing Attendance Check (Parallel Execution)
+    const [member, service, existingAttendance] = await Promise.all([
+      Member.findOne({
+        _id: memberId,
+        membershipStatus: "active",
+      })
+        .select("_id")
+        .lean(),
 
-    const [member, service] = await Promise.all([
-      Member.findById(memberId).select("membershipStatus"),
       LibraryService.findOne({
         _id: libraryServiceId,
         isActive: true,
-      }).select("_id"),
+      })
+        .select("_id")
+        .lean(),
+
+      Attendance.findOne({
+        member: memberId,
+        libraryService: libraryServiceId,
+        timeOut: null,
+      })
+        .select("_id")
+        .lean(),
     ]);
+    if (!member) {
+      return res.status(404).json({
+        message: "Member not found or membership is inactive.",
+      });
+    }
     if (!service) {
       return res.status(404).json({
         message: "Library service not found or is not active.",
       });
     }
-
-    const existingAttendance = await Attendance.findOne({
-      member: memberId,
-      libraryService: libraryServiceId,
-      timeOut: null,
-    });
 
     if (existingAttendance) {
       return res.status(409).json({
@@ -54,18 +64,26 @@ export const timeIn = async (req, res) => {
       });
     }
 
+    // 3. Create Attendance Record
+    const now = new Date();
     const attendance = await Attendance.create({
       member: memberId,
       libraryService: libraryServiceId,
       activity: activity || "",
-      date: new Date(),
-      timeIn: new Date(),
+      date: now,
+      timeIn: now,
       assistedBy: req.user._id,
     });
+
     return res
       .status(201)
       .json({ message: "Time-in recorded successfully.", attendance });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: "Member already has an active attendance for this service.",
+      });
+    }
     console.error("Error recording time-in:", error);
     return res
       .status(500)
@@ -76,23 +94,39 @@ export const timeOut = async (req, res) => {
   try {
     const { attendanceId } = req.body;
 
+    // 1. Validation check
     if (!attendanceId) {
       return res.status(400).json({
         message: "Attendance ID is required.",
       });
     }
-    const attendance = await Attendance.findOne({
-      _id: attendanceId,
-      timeOut: null,
-    });
+
+    if (!mongoose.Types.ObjectId.isValid(attendanceId)) {
+      return res.status(400).json({
+        message: "Invalid attendance ID format.",
+      });
+    }
+
+    // 2. Atomic Update using findOneAndUpdate + lean
+    const attendance = await Attendance.findOneAndUpdate(
+      {
+        _id: attendanceId,
+        timeOut: null,
+      },
+      {
+        $set: { timeOut: new Date() },
+      },
+      {
+        new: true, // I-return ang na-update na document
+      },
+    ).lean();
 
     if (!attendance) {
       return res.status(404).json({
         message: "Attendance record not found or already timed out.",
       });
     }
-    attendance.timeOut = new Date();
-    await attendance.save();
+
     return res.status(200).json({
       message: "Time-out recorded successfully.",
       attendance,
@@ -122,10 +156,14 @@ export const getAttendanceRecords = async (req, res) => {
         $lt: endOfDay,
       },
     })
-      .populate("member", "firstName lastName libraryCardNumber")
-      .populate("libraryService", "name")
-      .populate("assistedBy", "name")
-      .sort({ timeIn: -1 });
+      .select("date timeIn timeOut member libraryService assistedBy") // Kumuha lang ng kailangang fields
+      .populate([
+        { path: "member", select: "firstName lastName libraryCardNumber" },
+        { path: "libraryService", select: "name" },
+        { path: "assistedBy", select: "name" },
+      ])
+      .sort({ timeIn: -1 })
+      .lean();
 
     return res.status(200).json({
       message: "Attendance records retrieved successfully.",
