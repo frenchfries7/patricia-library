@@ -13,7 +13,7 @@ export async function apiRequest(url, { method = "GET", body, params } = {}) {
       ...(token && { Authorization: `Bearer ${token}` }),
     },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-  });
+  });   
 
   const data = await res.json().catch(() => ({}));
 
